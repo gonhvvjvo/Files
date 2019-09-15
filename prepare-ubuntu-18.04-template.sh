@@ -82,6 +82,8 @@ sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 # also look in /etc/netplan for other config files
 sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
 
+# reset the machine-id (DHCP leases in 18.04 are generated based on this... not MAC...)
+echo "" | sudo tee /etc/machine-id >/dev/null
 
 # config timezone
 timedatectl set-timezone Asia/Bangkok
