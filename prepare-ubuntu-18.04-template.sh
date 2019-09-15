@@ -75,15 +75,22 @@ hostnamectl set-hostname localhost
 apt clean
 
 # disable swap
-sudo swapoff --all
-sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+swapoff --all
+sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
 sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
 
+
+# config timezone
+timedatectl set-timezone Asia/Bangkok
+
+# harden openssh-server 
+sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
-sudo cloud-init clean --logs
+cloud-init clean --logs
 
 #cleanup shell history
 cat /dev/null > ~/.bash_history && history -c
