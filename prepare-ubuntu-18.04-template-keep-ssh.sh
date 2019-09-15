@@ -16,14 +16,13 @@ fi
 set -v
 
 #update apt-cache
-apt update -y
-apt upgrade -y
+apt update -y && apt upgrade -y
 
 #install packages
-apt install -y open-vm-tools
+apt install -y open-vm-tools &
 
 #Stop services for cleanup
-service rsyslog stop
+service rsyslog stop &
 
 #clear audit logs
 if [ -f /var/log/wtmp ]; then
@@ -34,8 +33,8 @@ if [ -f /var/log/lastlog ]; then
 fi
 
 #cleanup /tmp directories
-rm -rf /tmp/*
-rm -rf /var/tmp/*
+rm -rf /tmp/* &
+rm -rf /var/tmp/* &
 
 
 #add check for ssh keys on reboot...regenerate if neccessary
@@ -61,40 +60,40 @@ exit 0
 EOL
 
 # make sure the script is executable
-chmod +x /etc/rc.local
+chmod +x /etc/rc.local &
 
 #reset hostname
 # prevent cloudconfig from preserving the original hostname
-sed -i 's/preserve_hostname: false/preserve_hostname: true/g' /etc/cloud/cloud.cfg
-truncate -s0 /etc/hostname
-hostnamectl set-hostname localhost
+sed -i 's/preserve_hostname: false/preserve_hostname: true/g' /etc/cloud/cloud.cfg &
+truncate -s0 /etc/hostname &
+hostnamectl set-hostname localhost &
 
 #cleanup apt
-apt clean
+apt clean &
 
 # disable swap
-swapoff --all
-sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+swapoff --all &
+sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab &
 
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
-sed -i 's/dhcp4: true/&\'$'\n''            dhcp-identifier: mac/' /etc/netplan/50-cloud-init.yaml
+sed -i 's/dhcp4: true/&\'$'\n''            dhcp-identifier: mac/' /etc/netplan/50-cloud-init.yaml &
 
 # reset the machine-id (DHCP leases in 18.04 are generated based on this... not MAC...)
 #echo "" | sudo tee /etc/machine-id >/dev/null
 
 # config timezone
-timedatectl set-timezone Asia/Bangkok
+timedatectl set-timezone Asia/Bangkok &
 
 # harden openssh-server 
-sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config &
 
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
-cloud-init clean --logs
+cloud-init clean --logs &
 
 #cleanup shell history
-cat /dev/null > ~/.bash_history && history -c
-history -w
+cat /dev/null > ~/.bash_history && history -c &
+history -w &
 
 exec bash
 #shutdown
