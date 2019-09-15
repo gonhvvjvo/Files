@@ -6,7 +6,7 @@
 # TESTED ON UBUNTU 18.04 LTS
 
 # SETUP & RUN
-# curl -sL https://github.com/gonhvvjvo/Files/raw/master/prepare-ubuntu-18.04-template.sh | sudo -E bash -
+# curl -sL https://github.com/gonhvvjvo/Files/raw/master/prepare-ubuntu-18.04-template-keep-ssh.sh | sudo -E bash -
 
 if [ `id -u` -ne 0 ]; then
 	echo Need sudo
