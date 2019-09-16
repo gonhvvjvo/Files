@@ -55,7 +55,7 @@ cat << 'EOL' | sudo tee /etc/rc.local
 if hostname | grep localhost; then
     hostnamectl set-hostname "$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')"
 fi
-test -f /etc/ssh/ssh_host_dsa_key || dpkg-reconfigure openssh-server
+test -f /etc/ssh/ssh_host_dsa_key || dpkg-reconfigure openssh-server && sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 exit 0
 EOL
 
@@ -86,7 +86,7 @@ echo "" | sudo tee /etc/machine-id >/dev/null
 timedatectl set-timezone Asia/Bangkok
 
 # harden openssh-server 
-sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+#sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
 cloud-init clean --logs
