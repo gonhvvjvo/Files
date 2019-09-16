@@ -6,7 +6,7 @@
 # TESTED ON UBUNTU 18.04 LTS
 
 # SETUP & RUN
-# curl -sL https://github.com/gonhvvjvo/Files/raw/master/prepare-ubuntu-18.04-template-ssh-keyauthen.sh | sudo -E bash -
+# curl -sL https://github.com/gonhvvjvo/Files/raw/master/prepare-ubuntu-18.04-template-harden-ssh.sh | sudo -E bash -
 
 if [ `id -u` -ne 0 ]; then
 	echo Need sudo
@@ -16,7 +16,8 @@ fi
 set -v
 
 #update apt-cache
-apt update -y && apt upgrade -y
+apt update -y
+apt upgrade -y
 
 #install packages
 apt install -y open-vm-tools
@@ -36,6 +37,8 @@ fi
 rm -rf /tmp/*
 rm -rf /var/tmp/*
 
+#cleanup current ssh keys
+rm -f /etc/ssh/ssh_host_*
 
 #add check for ssh keys on reboot...regenerate if neccessary
 cat << 'EOL' | sudo tee /etc/rc.local
@@ -72,30 +75,31 @@ hostnamectl set-hostname localhost
 apt clean
 
 # disable swap
-swapoff --all
-sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+sudo swapoff --all
+sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
 sed -i 's/dhcp4: true/&\'$'\n''            dhcp-identifier: mac/' /etc/netplan/50-cloud-init.yaml
 
+
 # reset the machine-id (DHCP leases in 18.04 are generated based on this... not MAC...)
 echo "" | sudo tee /etc/machine-id >/dev/null
+
 
 # config timezone
 timedatectl set-timezone Asia/Bangkok
 
 # harden openssh-server 
-#sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
-cloud-init clean --logs
+sudo cloud-init clean --logs
+
 
 #cleanup shell history
-cat /dev/null > ~/.bash_history& history -c
+cat /dev/null > ~/.bash_history && history -c
 history -w
-
-exec bash
 
 #shutdown
 #shutdown -h now
