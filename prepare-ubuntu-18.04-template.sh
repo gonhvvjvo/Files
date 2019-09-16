@@ -88,8 +88,6 @@ echo "" | sudo tee /etc/machine-id >/dev/null
 # config timezone
 timedatectl set-timezone Asia/Bangkok
 
-# harden openssh-server 
-sed -i '123s/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
 cloud-init clean --logs
