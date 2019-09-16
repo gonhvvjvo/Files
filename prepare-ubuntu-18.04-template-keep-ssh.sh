@@ -80,7 +80,7 @@ sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 sed -i 's/dhcp4: true/&\'$'\n''            dhcp-identifier: mac/' /etc/netplan/50-cloud-init.yaml
 
 # reset the machine-id (DHCP leases in 18.04 are generated based on this... not MAC...)
-#echo "" | sudo tee /etc/machine-id >/dev/null
+echo "" | sudo tee /etc/machine-id >/dev/null
 
 # config timezone
 timedatectl set-timezone Asia/Bangkok
@@ -96,5 +96,6 @@ cat /dev/null > ~/.bash_history& history -c
 history -w
 
 exec bash
+
 #shutdown
-#shutdown -h now
+shutdown -h now
