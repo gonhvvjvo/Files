@@ -80,15 +80,7 @@ sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
-sed -i 's/dhcp4: true/&\'$'\n''            dhcp-identifier: mac/' /etc/netplan/50-cloud-init.yaml
-
-
-# reset the machine-id (DHCP leases in 18.04 are generated based on this... not MAC...)
-echo "" | sudo tee /etc/machine-id >/dev/null
-
-# config timezone
-timedatectl set-timezone Asia/Bangkok
-
+sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
 
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
 sudo cloud-init clean --logs
@@ -98,4 +90,4 @@ cat /dev/null > ~/.bash_history && history -c
 history -w
 
 #shutdown
-#shutdown -h now
+shutdown -h now
