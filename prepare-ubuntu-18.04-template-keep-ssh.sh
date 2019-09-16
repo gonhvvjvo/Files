@@ -98,4 +98,4 @@ history -w
 exec bash
 
 #shutdown
-shutdown -h now
+#shutdown -h now
