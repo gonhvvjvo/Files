@@ -88,7 +88,6 @@ echo "" | sudo tee /etc/machine-id >/dev/null
 # config timezone
 timedatectl set-timezone Asia/Bangkok
 
-
 # cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
 cloud-init clean --logs
 
